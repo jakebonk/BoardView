@@ -69,7 +69,7 @@ public class BoardView extends FrameLayout {
     private int mLastEventY = -1;
     private Scroller mScroller;
 
-    interface DragStartCallback{
+    public interface DragStartCallback{
         void startDrag(View itemView, int originalPosition);
         void changedPosition(View itemView, int originalPosition, int newPosition);
         void endDrag(View itemView, int originalPosition, int newPosition);
