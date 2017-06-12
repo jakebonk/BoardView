@@ -427,6 +427,12 @@ public class BoardView extends FrameLayout {
             mobileView.setVisibility(VISIBLE);
             mHoverCell = null;
             invalidate();
+            if(mDragItemStartCallback != null){
+                int columnPos = mParentLayout.indexOfChild(mobileView);
+                //Subtract one because the first view is the header
+                int pos = ((LinearLayout)mobileView.getParent()).indexOfChild(mobileView)-1;
+                mDragItemStartCallback.endDrag(mobileView,originalPosition,originalItemPosition,pos,columnPos);
+            }
         }else if(mCellIsMobile){
             for (int i = 0; i < mParentLayout.getChildCount(); i++) {
                 BoardItem parentView = (BoardItem) mParentLayout.getChildAt(i);//Gets the parent layout
@@ -440,12 +446,6 @@ public class BoardView extends FrameLayout {
                 int columnPos = mParentLayout.indexOfChild(mobileView);
                 scrollToColumn(columnPos,true);
                 mDragColumnStartCallback.endDrag(((LinearLayout)mobileView).getChildAt(0),originalPosition,columnPos);
-            }
-            if(mDragItemStartCallback != null){
-                int columnPos = mParentLayout.indexOfChild(mobileView);
-                //Subtract one because the first view is the header
-                int pos = ((LinearLayout)mobileView.getParent()).indexOfChild(mobileView)-1;
-                mDragItemStartCallback.endDrag(mobileView,originalPosition,originalItemPosition,pos,columnPos);
             }
         }
 
