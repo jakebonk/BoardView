@@ -16,7 +16,7 @@ Add this to your build.gradle file for your app
 Add this to your dependencies in build.gradle for your project
 
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:0.1.0'
+	        compile 'com.github.jakebonk:BoardView:1.0.0'
 	}
 
 ### Things to fix
