@@ -577,11 +577,11 @@ public class BoardView extends FrameLayout {
                         }
                         originalPosition = mParentLayout.indexOfChild(parent_layout);
                         originalItemPosition = ((LinearLayout)view.getParent()).indexOfChild(view);
+                        mDragItemStartCallback.startDrag(layout,originalPosition,originalItemPosition);
                         mCellSubIsMobile = true;
                         mobileView = (View)(view);
                         mHoverCell = getAndAddHoverView(mobileView,1);
                         mobileView.setVisibility(INVISIBLE);
-                        mDragItemStartCallback.startDrag(layout,originalPosition,originalItemPosition);
                         return false;
                     }
                 });
