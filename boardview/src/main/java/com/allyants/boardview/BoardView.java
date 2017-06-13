@@ -142,6 +142,14 @@ public class BoardView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    public void setAdapter(BoardAdapter boardAdapter){
+        boardAdapter.createColumns();
+        for(int i = 0;i < boardAdapter.columns.size();i++){
+            BoardAdapter.Column column = boardAdapter.columns.get(i);
+            addColumnList(column.header,column.views,null);
+        }
+    }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -514,7 +522,7 @@ public class BoardView extends FrameLayout {
         return runnable;
     }
 
-    public void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable View footer){
+    private void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable View footer){
         final BoardItem parent_layout = new BoardItem(getContext());
         final LinearLayout layout = new LinearLayout(getContext());
         layout.setOrientation(LinearLayout.VERTICAL);
