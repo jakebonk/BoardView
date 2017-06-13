@@ -21,35 +21,22 @@ Add this to your dependencies in build.gradle for your project.
 
 ## Usage
 
-I'll probably switch this to some kind of adapter to simplify it.
+BoardView utilizes a BoardAdapter, SimpleBoardAdapter is an example of how to extend BoardAdapter.
 
 	BoardView boardView = (BoardView)findViewById(R.id.boardview);
-        final View item1 = View.inflate(this, R.layout.column_header, null);
-        final View item2 = View.inflate(this, R.layout.column_header, null);
-        final View item3 = View.inflate(this, R.layout.column_header, null);
-        final View item4 = View.inflate(this, R.layout.column_header, null);
-        ArrayList<View> items = new ArrayList<>();
-        items.add(item1);
-        items.add(item2);
-        items.add(item3);
-        items.add(item4);
-        final View header = View.inflate(this, R.layout.column_header, null);
-        boardView.addColumnList(header,items,null);
-        final View header1 = View.inflate(this, R.layout.column_header, null);
-        final View footer = View.inflate(this, R.layout.column_header, null);
-        boardView.addColumnList(header1,new ArrayList<View>(),null);
-        final View header2 = View.inflate(this, R.layout.column_header, null);
-        boardView.addColumnList(header2,new ArrayList<View>(),null);
-        final View header3 = View.inflate(this, R.layout.column_header, null);
-        boardView.addColumnList(header3,new ArrayList<View>(),null);
-        ((TextView)header.findViewById(R.id.textView)).setText("Hello World 1");
-        ((TextView)header1.findViewById(R.id.textView)).setText("Hello World 2");
-        ((TextView)header2.findViewById(R.id.textView)).setText("Hello World 3");
-        ((TextView)header3.findViewById(R.id.textView)).setText("Hello World 4");
-        ((TextView)item1.findViewById(R.id.textView)).setText("Item 1");
-        ((TextView)item2.findViewById(R.id.textView)).setText("Item 2");
-        ((TextView)item3.findViewById(R.id.textView)).setText("Item 3");
-        ((TextView)item4.findViewById(R.id.textView)).setText("Item 4");
+	ArrayList<SimpleBoardAdapter.SimpleColumn> data = new ArrayList<>();
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("Item 1");
+        list.add("Item 2");
+        list.add("Item 3");
+        list.add("Item 4");
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 1",list));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",list));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 3",list));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 4",list));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",list));
+        SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
+        boardView.setAdapter(boardAdapter);
 	
 There are two types of drag listeners, the first is for columns
 
@@ -88,7 +75,10 @@ Similarly we can get the drag listener for items
 
             }
         });
+	
+### Creating your own BoardAdapter
+
+Creating a custom BoardAdapter is pretty similar to that of a BaseAdapter, the main focus being to create some type of object that help you create your custom views for both headers and items.
 
 ### Things to fix
 There is a scaling issue when the column is beginning dragging or has ended dragging. I know this is an issue but I don't know of a good way to solve this at the moment. I eventually will fix it but for now I'm putting it on the back burners.
-Another thing will be to create a custom list adapter that won't require the repition of creating views to add a column and it's items.
