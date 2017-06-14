@@ -307,10 +307,10 @@ public class BoardView extends FrameLayout {
         int[] parentLocation = new int[2];
         ScrollView parent = ((ScrollView)((LinearLayout)mobileView.getParent()).getParent());
         parent.getLocationOnScreen(parentLocation);
-        if(location[1] < parentLocation[1]){
+        if(location[1]-mobileView.getHeight() < parentLocation[1]){
             parent.smoothScrollBy(0,-10);
         }
-        if(location[1]+mobileView.getHeight() > parentLocation[1]+parent.getHeight()){
+        if(location[1]+mobileView.getHeight()+mobileView.getHeight() > parentLocation[1]+parent.getHeight()){
             parent.smoothScrollBy(0,10);
         }
         if(aboveView != null){
