@@ -9,24 +9,25 @@ BoardView is a custom view that allows you to be able to re-order items in a lis
 
 ## Download library with Jitpack.io
 Add this to your build.gradle file for your app.
-
+```java
 	allprojects {
 		repositories {
 			...
 			maven { url 'https://jitpack.io' }
 		}
 	}
+```	
 
 Add this to your dependencies in build.gradle for your project.
-
+```java
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:1.0.1'
+	        compile 'com.github.jakebonk:BoardView:1.1.0'
 	}
-
+```
 ## Usage
 
 BoardView utilizes a BoardAdapter, SimpleBoardAdapter is an example of how to extend BoardAdapter.
-
+```java
 	BoardView boardView = (BoardView)findViewById(R.id.boardview);
 	ArrayList<SimpleBoardAdapter.SimpleColumn> data = new ArrayList<>();
         ArrayList<String> list = new ArrayList<String>();
@@ -41,9 +42,9 @@ BoardView utilizes a BoardAdapter, SimpleBoardAdapter is an example of how to ex
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",list));
         SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
         boardView.setAdapter(boardAdapter);
-	
+```
 There are two types of drag listeners, the first is for columns
-
+```java
 	 boardView.setOnDragColumnListener(new BoardView.DragColumnStartCallback() {
             @Override
             public void startDrag(View view, int startColumnPos) {
@@ -60,9 +61,9 @@ There are two types of drag listeners, the first is for columns
 
             }
         });
-	
+```
 Similarly we can get the drag listener for items
-
+```java
 	 boardView.setOnDragItemListener(new BoardView.DragItemStartCallback() {
             @Override
             public void startDrag(View view, int startItemPos, int startColumnPos) {
@@ -79,6 +80,26 @@ Similarly we can get the drag listener for items
 
             }
         });
+```
+
+This is how to set the click listener for a item and header, which gives their respective positions.
+	
+```java
+	
+	boardView.setOnItemClickListener(new BoardView.ItemClickListener() {
+            @Override
+            public void onClick(View v, int column_pos, int item_pos) {
+                
+            }
+        });
+        boardView.setOnHeaderClickListener(new BoardView.HeaderClickListener() {
+            @Override
+            public void onClick(View v, int column_pos) {
+                
+            }
+        });
+
+```
 	
 ### Creating your own BoardAdapter
 
