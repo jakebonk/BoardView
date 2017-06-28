@@ -1,5 +1,4 @@
 package com.allyants.boardview;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -43,6 +42,20 @@ public class BoardView extends FrameLayout {
 
     private int originalPosition = -1;
     private int originalItemPosition = -1;
+
+    private HeaderClickListener headerClickListener = new HeaderClickListener() {
+        @Override
+        public void onClick(View v, int column_pos) {
+
+        }
+    };
+
+    private ItemClickListener itemClickListener = new ItemClickListener() {
+        @Override
+        public void onClick(View v, int column_pos, int item_pos) {
+
+        }
+    };
 
     private DragColumnStartCallback mDragColumnStartCallback = new DragColumnStartCallback() {
         @Override
@@ -98,6 +111,22 @@ public class BoardView extends FrameLayout {
         void startDrag(View itemView, int originalPosition,int originalColumn);
         void changedPosition(View itemView, int originalPosition,int originalColumn, int newPosition, int newColumn);
         void endDrag(View itemView, int originalPosition,int originalColumn, int newPosition, int newColumn);
+    }
+
+    public interface HeaderClickListener{
+        void onClick(View v,int column_pos);
+    }
+
+    public interface ItemClickListener{
+        void onClick(View v,int column_pos,int item_pos);
+    }
+
+    public void setOnHeaderClickListener(HeaderClickListener headerClickListener){
+        this.headerClickListener = headerClickListener;
+    }
+
+    public void setOnItemClickListener(ItemClickListener itemClickListener){
+        this.itemClickListener = itemClickListener;
     }
 
     public void setOnDragColumnListener(DragColumnStartCallback dragStartCallback){
@@ -565,6 +594,7 @@ public class BoardView extends FrameLayout {
                 public void onClick(View v) {
                     int pos = mParentLayout.indexOfChild(parent_layout);
                     scrollToColumn(pos,true);
+                    headerClickListener.onClick(v,pos);
                 }
             });
             header.setOnLongClickListener(new OnLongClickListener() {
@@ -600,6 +630,14 @@ public class BoardView extends FrameLayout {
             for(int i = 0;i < items.size();i++){
                 final View view = items.get(i);
                 layout_children.addView(view);
+                final int finalI = i;
+                view.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int pos = mParentLayout.indexOfChild(parent_layout);
+                        itemClickListener.onClick(v,pos, finalI);
+                    }
+                });
                 view.setOnLongClickListener(new OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {

@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BoardView.iml" filepath="$PROJECT_DIR$/BoardView.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BoardView.iml" filepath="$PROJECT_DIR$/BoardView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/boardview/boardview.iml" filepath="$PROJECT_DIR$/boardview/boardview.iml" />
       <module fileurl="file://$PROJECT_DIR$/boardview/boardview.iml" filepath="$PROJECT_DIR$/boardview/boardview.iml" />
     </modules>
   </component>
