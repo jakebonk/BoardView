@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BoardView boardView = (BoardView)findViewById(R.id.boardView);
+        final BoardView boardView = (BoardView)findViewById(R.id.boardView);
         ArrayList<SimpleBoardAdapter.SimpleColumn> data = new ArrayList<>();
         ArrayList<String> list = new ArrayList<String>();
         list.add("Item 1");
@@ -49,12 +49,18 @@ public class MainActivity extends AppCompatActivity {
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 3",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 4",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",list));
-        SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
+        final SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
+        boardView.setOnDoneListener(new BoardView.DoneListener() {
+            @Override
+            public void onDone() {
+                Log.e("ee","Done");
+            }
+        });
         boardView.setAdapter(boardAdapter);
         boardView.setOnItemClickListener(new BoardView.ItemClickListener() {
             @Override
             public void onClick(View v, int column_pos, int item_pos) {
-                Log.e("ee",String.valueOf(item_pos));
+                boardView.scrollToColumn(column_pos,false);
             }
         });
         boardView.setOnHeaderClickListener(new BoardView.HeaderClickListener() {
@@ -95,5 +101,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("End Drag Item","Item: "+String.valueOf(i2)+"; Column:"+String.valueOf(i3));
             }
         });
+
     }
 }

@@ -51,6 +51,11 @@ public class SimpleBoardAdapter extends BoardAdapter{
     }
 
     @Override
+    public void createColumns() {
+        super.createColumns();
+    }
+
+    @Override
     public View createHeaderView(Context context,Object header_object,int column_position) {
         View column = View.inflate(context, header_resource, null);
         TextView textView = (TextView)column.findViewById(R.id.textView);

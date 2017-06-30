@@ -43,6 +43,13 @@ public class BoardView extends FrameLayout {
     private int originalPosition = -1;
     private int originalItemPosition = -1;
 
+    private DoneListener mDoneCallback = new DoneListener() {
+        @Override
+        public void onDone() {
+
+        }
+    };
+
     private HeaderClickListener headerClickListener = new HeaderClickListener() {
         @Override
         public void onClick(View v, int column_pos) {
@@ -137,6 +144,10 @@ public class BoardView extends FrameLayout {
         mDragItemStartCallback = dragStartCallback;
     }
 
+    public void setOnDoneListener(DoneListener onDoneListener){
+        mDoneCallback = onDoneListener;
+    }
+
     long last_swap = System.currentTimeMillis();
     long last_swap_item = System.currentTimeMillis();
 
@@ -173,6 +184,10 @@ public class BoardView extends FrameLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    public interface DoneListener {
+        void onDone();
+    }
+
     public void setAdapter(BoardAdapter boardAdapter){
         this.boardAdapter = boardAdapter;
         boardAdapter.createColumns();
@@ -180,6 +195,7 @@ public class BoardView extends FrameLayout {
             BoardAdapter.Column column = boardAdapter.columns.get(i);
             addColumnList(column.header,column.views,null);
         }
+        mDoneCallback.onDone();
     }
 
     @Override
