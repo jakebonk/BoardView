@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -249,7 +248,6 @@ public class BoardView extends FrameLayout {
         if(column >= 0) {
             View childView = mParentLayout.getChildAt(column);
             int newX = childView.getLeft() - (int) (((getMeasuredWidth() - childView.getMeasuredWidth()) / 2));
-            Log.e("ee",String.valueOf(childView.getLeft()));
             if (animate) {
                 mRootLayout.smoothScrollTo(newX, 0);
             } else {

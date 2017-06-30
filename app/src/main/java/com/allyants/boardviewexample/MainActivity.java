@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDone() {
                 Log.e("scroll","done");
-                boardView.scrollToColumn(2,false);
             }
         });
         boardView.setOnItemClickListener(new BoardView.ItemClickListener() {
