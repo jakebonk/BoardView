@@ -50,13 +50,15 @@ public class MainActivity extends AppCompatActivity {
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 4",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",list));
         final SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
+
+        boardView.setAdapter(boardAdapter);
         boardView.setOnDoneListener(new BoardView.DoneListener() {
             @Override
             public void onDone() {
-                Log.e("ee","Done");
+                Log.e("scroll","done");
+                boardView.scrollToColumn(2,false);
             }
         });
-        boardView.setAdapter(boardAdapter);
         boardView.setOnItemClickListener(new BoardView.ItemClickListener() {
             @Override
             public void onClick(View v, int column_pos, int item_pos) {
