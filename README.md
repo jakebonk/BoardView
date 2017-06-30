@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:1.1.3'
+	        compile 'com.github.jakebonk:BoardView:1.1.4'
 	}
 ```
 ## Usage
@@ -82,7 +82,7 @@ Similarly we can get the drag listener for items
         });
 ```
 
-There is also a listener for when the BoardView has finished creating and assigning its views. It should be noted that this MUST go above when you set the BoardView adapter because if it is all being called in the same thread then the listener will not fire because it has already been created.
+There is also a listener for when the BoardView has finished creating and assigning its views.
 
 ```java 
 
