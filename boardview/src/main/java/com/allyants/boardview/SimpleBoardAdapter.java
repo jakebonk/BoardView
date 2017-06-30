@@ -33,7 +33,17 @@ public class SimpleBoardAdapter extends BoardAdapter{
     }
 
     @Override
-    public View createItemView(Context context,int column_position, int item_position) {
+    public Object createHeaderObject(int column_position) {
+        return data.get(column_position).header;
+    }
+
+    @Override
+    public Object createItemObject(int column_position, int item_position) {
+        return data.get(column_position).items.get(item_position);
+    }
+
+    @Override
+    public View createItemView(Context context,Object header_object,Object item_object,int column_position, int item_position) {
         View item = View.inflate(context, item_resource, null);
         TextView textView = (TextView)item.findViewById(R.id.textView);
         textView.setText(data.get(column_position).items.get(item_position));
@@ -41,7 +51,7 @@ public class SimpleBoardAdapter extends BoardAdapter{
     }
 
     @Override
-    public View createHeaderView(Context context,int column_position) {
+    public View createHeaderView(Context context,Object header_object,int column_position) {
         View column = View.inflate(context, header_resource, null);
         TextView textView = (TextView)column.findViewById(R.id.textView);
         textView.setText(data.get(column_position).header);

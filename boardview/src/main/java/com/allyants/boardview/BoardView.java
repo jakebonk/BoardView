@@ -157,6 +157,7 @@ public class BoardView extends FrameLayout {
     private int mTotalOffsetX = 0;
     private int mTotalOffsetY = 0;
 
+    BoardAdapter boardAdapter;
 
     private View mobileView;
 
@@ -173,6 +174,7 @@ public class BoardView extends FrameLayout {
     }
 
     public void setAdapter(BoardAdapter boardAdapter){
+        this.boardAdapter = boardAdapter;
         boardAdapter.createColumns();
         for(int i = 0;i < boardAdapter.columns.size();i++){
             BoardAdapter.Column column = boardAdapter.columns.get(i);
@@ -480,6 +482,12 @@ public class BoardView extends FrameLayout {
                 int columnPos = parentLayout.indexOfChild((View)(mobileView.getParent().getParent().getParent()));
                 //Subtract one because the first view is the header
                 int pos = ((LinearLayout)mobileView.getParent()).indexOfChild(mobileView);
+                View tmpView = boardAdapter.columns.get(originalPosition).views.get(originalItemPosition);
+                boardAdapter.columns.get(originalPosition).views.remove(originalItemPosition);
+                boardAdapter.columns.get(columnPos).views.add(pos,tmpView);
+                Object tmpObject = boardAdapter.columns.get(originalPosition).objects.get(originalItemPosition);
+                boardAdapter.columns.get(originalPosition).objects.remove(originalItemPosition);
+                boardAdapter.columns.get(columnPos).objects.add(pos,tmpObject);
                 mDragItemStartCallback.endDrag(mobileView,originalPosition,originalItemPosition,pos,columnPos);
             }
         }else if(mCellIsMobile){
@@ -497,6 +505,9 @@ public class BoardView extends FrameLayout {
             if(mDragColumnStartCallback != null){
                 int columnPos = mParentLayout.indexOfChild(mobileView);
                 scrollToColumn(columnPos,true);
+                BoardAdapter.Column column = boardAdapter.columns.get(originalPosition);
+                boardAdapter.columns.remove(originalPosition);
+                boardAdapter.columns.add(columnPos,column);
                 mDragColumnStartCallback.endDrag(((LinearLayout)mobileView).getChildAt(0),originalPosition,columnPos);
             }
         }
