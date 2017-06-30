@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public abstract class BoardAdapter{
 
     Context context;
-    ArrayList<Column> columns = new ArrayList<>();
+    public ArrayList<Column> columns = new ArrayList<>();
 
     public BoardAdapter(Context context){
         this.context = context;
