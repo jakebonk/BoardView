@@ -247,11 +247,13 @@ public class BoardView extends FrameLayout {
     public void scrollToColumn(int column,boolean animate){
         if(column >= 0) {
             View childView = mParentLayout.getChildAt(column);
-            int newX = childView.getLeft() - (int) (((getMeasuredWidth() - childView.getMeasuredWidth()) / 2));
-            if (animate) {
-                mRootLayout.smoothScrollTo(newX, 0);
-            } else {
-                mRootLayout.scrollTo(newX, 0);
+            if(childView != null) {
+                int newX = childView.getLeft() - (int) (((getMeasuredWidth() - childView.getMeasuredWidth()) / 2));
+                if (animate) {
+                    mRootLayout.smoothScrollTo(newX, 0);
+                } else {
+                    mRootLayout.scrollTo(newX, 0);
+                }
             }
         }
     }
