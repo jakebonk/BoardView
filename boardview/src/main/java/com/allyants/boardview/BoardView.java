@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -598,6 +599,13 @@ public class BoardView extends FrameLayout {
         return runnable;
     }
 
+    private void removeParent(View view){
+        ViewGroup viewGroup = ((ViewGroup)view.getParent());
+        if(viewGroup != null){
+            viewGroup.removeView(view);
+        }
+    }
+
     private void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable View footer){
         final BoardItem parent_layout = new BoardItem(getContext());
         final LinearLayout layout = new LinearLayout(getContext());
@@ -621,6 +629,7 @@ public class BoardView extends FrameLayout {
         }
         parent_layout.addView(layout);
         if(header != null){
+            removeParent(header);
             layout.addView(header);
             header.setOnClickListener(new OnClickListener() {
                 @Override
@@ -662,6 +671,7 @@ public class BoardView extends FrameLayout {
             scroll_view.addView(layout_children);
             for(int i = 0;i < items.size();i++){
                 final View view = items.get(i);
+                removeParent(view);
                 layout_children.addView(view);
                 final int finalI = i;
                 view.setOnClickListener(new OnClickListener() {
@@ -690,6 +700,7 @@ public class BoardView extends FrameLayout {
             }
         }
         if(footer != null) {
+            removeParent(footer);
             layout.addView(footer);
         }
         mParentLayout.addView(parent_layout);

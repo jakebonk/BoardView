@@ -19,6 +19,7 @@ public abstract class BoardAdapter{
     }
 
     public void createColumns(){
+        columns.clear();
         for(int i = 0; i < getColumnCount();i++){
             ArrayList<View> views = new ArrayList<>();
             Column column = new Column(createHeaderView(context,createHeaderObject(i),i),views);

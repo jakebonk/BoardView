@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         final SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
 
         boardView.setAdapter(boardAdapter);
+        boardView.setAdapter(boardAdapter);
         boardView.setOnDoneListener(new BoardView.DoneListener() {
             @Override
             public void onDone() {
