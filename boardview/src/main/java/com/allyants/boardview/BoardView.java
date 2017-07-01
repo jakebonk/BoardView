@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -192,6 +191,7 @@ public class BoardView extends FrameLayout {
 
     public void setAdapter(BoardAdapter boardAdapter){
         this.boardAdapter = boardAdapter;
+        mParentLayout.removeAllViews();
         boardAdapter.createColumns();
         for(int i = 0;i < boardAdapter.columns.size();i++){
             BoardAdapter.Column column = boardAdapter.columns.get(i);
