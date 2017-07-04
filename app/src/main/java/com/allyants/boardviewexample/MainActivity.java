@@ -19,31 +19,6 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<SimpleBoardAdapter.SimpleColumn> data = new ArrayList<>();
         ArrayList<String> list = new ArrayList<String>();
         list.add("Item 1");
-        list.add("Item 2");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 3");
-        list.add("Item 4");
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 1",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 3",list));
@@ -85,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void endDrag(View view, int i, int i1) {
                 Log.e("End Drag Column",String.valueOf(i1));
+            }
+        });
+        boardView.setOnFooterClickListener(new BoardView.FooterClickListener() {
+            @Override
+            public void onClick(View v, int column_pos) {
+                Log.e("Footer Click","Column: "+String.valueOf(column_pos));
             }
         });
         boardView.setOnDragItemListener(new BoardView.DragItemStartCallback() {

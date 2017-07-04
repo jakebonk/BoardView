@@ -1,7 +1,10 @@
 package com.allyants.boardview;
+
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -10,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,15 +41,32 @@ public class BoardView extends FrameLayout {
     private Rect mHoverCellCurrentBounds;
     private Rect mHoverCellOriginalBounds;
 
+    private int background_color;
+
     private HorizontalScrollView mRootLayout;
     private LinearLayout mParentLayout;
 
     private int originalPosition = -1;
     private int originalItemPosition = -1;
 
+    public void setBackgroundColor(int color){
+        background_color = color;
+    }
+
+    public int getBackgroundColor(){
+        return background_color;
+    }
+
     private DoneListener mDoneCallback = new DoneListener() {
         @Override
         public void onDone() {
+
+        }
+    };
+
+    private FooterClickListener footerClickListener = new FooterClickListener() {
+        @Override
+        public void onClick(View v, int column_pos) {
 
         }
     };
@@ -121,6 +142,11 @@ public class BoardView extends FrameLayout {
         void endDrag(View itemView, int originalPosition,int originalColumn, int newPosition, int newColumn);
     }
 
+    public interface FooterClickListener{
+        void onClick(View v,int column_pos);
+    }
+
+
     public interface HeaderClickListener{
         void onClick(View v,int column_pos);
     }
@@ -131,6 +157,10 @@ public class BoardView extends FrameLayout {
 
     public void setOnHeaderClickListener(HeaderClickListener headerClickListener){
         this.headerClickListener = headerClickListener;
+    }
+
+    public void setOnFooterClickListener(FooterClickListener footerClickListener){
+        this.footerClickListener = footerClickListener;
     }
 
     public void setOnItemClickListener(ItemClickListener itemClickListener){
@@ -179,10 +209,22 @@ public class BoardView extends FrameLayout {
 
     public BoardView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.BoardView,0,0);
+        try {
+            background_color = ta.getColor(R.styleable.BoardView_boardItemBackground,Color.TRANSPARENT);
+        }finally{
+            ta.recycle();
+        }
     }
 
     public BoardView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        TypedArray ta = context.obtainStyledAttributes(attrs,R.styleable.BoardView,0,0);
+        try {
+            background_color = ta.getColor(R.styleable.BoardView_boardItemBackground,Color.TRANSPARENT);
+        }finally{
+            ta.recycle();
+        }
     }
 
     public interface DoneListener {
@@ -195,7 +237,7 @@ public class BoardView extends FrameLayout {
         boardAdapter.createColumns();
         for(int i = 0;i < boardAdapter.columns.size();i++){
             BoardAdapter.Column column = boardAdapter.columns.get(i);
-            addColumnList(column.header,column.views,null);
+            addColumnList(column.header,column.views,column.footer);
         }
     }
 
@@ -503,8 +545,9 @@ public class BoardView extends FrameLayout {
             if(mDragItemStartCallback != null){
                 LinearLayout parentLayout = (LinearLayout)(mobileView.getParent().getParent().getParent().getParent());
                 int columnPos = parentLayout.indexOfChild((View)(mobileView.getParent().getParent().getParent()));
-                //Subtract one because the first view is the header
                 int pos = ((LinearLayout)mobileView.getParent()).indexOfChild(mobileView);
+                Log.e("ee",String.valueOf(originalPosition));
+                Log.e("ee",String.valueOf(originalItemPosition));
                 View tmpView = boardAdapter.columns.get(originalPosition).views.get(originalItemPosition);
                 boardAdapter.columns.get(originalPosition).views.remove(originalItemPosition);
                 boardAdapter.columns.get(columnPos).views.add(pos,tmpView);
@@ -606,26 +649,31 @@ public class BoardView extends FrameLayout {
         }
     }
 
-    private void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable View footer){
+    private void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable final View footer){
         final BoardItem parent_layout = new BoardItem(getContext());
+        parent_layout.setBackgroundColor(background_color);
         final LinearLayout layout = new LinearLayout(getContext());
         final ScrollView scroll_view = new ScrollView(getContext());
+        ScrollView.LayoutParams scrollParams = new ScrollView.LayoutParams(ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.WRAP_CONTENT);
+        scroll_view.setLayoutParams(scrollParams);
         final LinearLayout layout_children = new LinearLayout(getContext());
         layout_children.setOrientation(LinearLayout.VERTICAL);
         layout.setOrientation(LinearLayout.VERTICAL);
         parent_layout.setOrientation(LinearLayout.VERTICAL);
         if(constWidth) {
-            int margin = calculatePixelFromDensity(5);
+            int margin = calculatePixelFromDensity(8);
             LayoutParams params = new LayoutParams(calculatePixelFromDensity(240), LayoutParams.WRAP_CONTENT);
-            params.setMargins(margin,margin,margin,margin);
+            LayoutParams parent_params = new LayoutParams(calculatePixelFromDensity(240), LayoutParams.WRAP_CONTENT);
             layout.setLayoutParams(params);
-            parent_layout.setLayoutParams(params);
+            parent_params.setMargins(margin,margin,margin,margin);
+            parent_layout.setLayoutParams(parent_params);
         }else {
-            int margin = calculatePixelFromDensity(5);
+            int margin = calculatePixelFromDensity(8);
             LayoutParams params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            params.setMargins(margin,margin,margin,margin);
+            LayoutParams parent_params = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             layout.setLayoutParams(params);
-            parent_layout.setLayoutParams(params);
+            parent_params.setMargins(margin,margin,margin,margin);
+            parent_layout.setLayoutParams(parent_params);
         }
         parent_layout.addView(layout);
         if(header != null){
@@ -646,6 +694,7 @@ public class BoardView extends FrameLayout {
                         return false;
                     }
                     originalPosition = mParentLayout.indexOfChild(parent_layout);
+                    Log.e("eeeee",String.valueOf(originalPosition));
                     mDragColumnStartCallback.startDrag(layout,originalPosition);
                     mLastSwap = originalPosition;
                     for(int i = 0;i < mParentLayout.getChildCount();i++){
@@ -687,7 +736,7 @@ public class BoardView extends FrameLayout {
                         if (mDragItemStartCallback == null) {
                             return false;
                         }
-                        originalPosition = mParentLayout.indexOfChild(parent_layout);
+                        originalPosition = mParentLayout.indexOfChild((LinearLayout)((LinearLayout)view.getParent()).getParent().getParent());
                         originalItemPosition = ((LinearLayout)view.getParent()).indexOfChild(view);
                         mDragItemStartCallback.startDrag(view,originalPosition,originalItemPosition);
                         mCellSubIsMobile = true;
@@ -701,7 +750,31 @@ public class BoardView extends FrameLayout {
         }
         if(footer != null) {
             removeParent(footer);
+            final LinearLayout footer_layout = new LinearLayout(getContext());
+            footer_layout.setOrientation(LinearLayout.VERTICAL);
+            final LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            params.setMargins(0,200*-1,0,0);
             layout.addView(footer);
+            footer_layout.setLayoutParams(params);
+            parent_layout.addView(footer_layout);
+            footer.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int column_pos = mParentLayout.indexOfChild(parent_layout);
+                    footerClickListener.onClick(v,column_pos);
+                }
+            });
+            footer.post(new Runnable() {
+                @Override
+                public void run() {
+                    scroll_view.setPadding(0,0,0,footer.getHeight());
+                    final LinearLayout.LayoutParams new_params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    new_params.setMargins(0,footer.getHeight()*-1,0,0);
+                    removeParent(footer);
+                    footer_layout.setLayoutParams(new_params);
+                    footer_layout.addView(footer);
+                }
+            });
         }
         mParentLayout.addView(parent_layout);
     }

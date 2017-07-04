@@ -38,6 +38,11 @@ public class SimpleBoardAdapter extends BoardAdapter{
     }
 
     @Override
+    public Object createFooterObject(int column_position) {
+        return "Footer "+ String.valueOf(column_position);
+    }
+
+    @Override
     public Object createItemObject(int column_position, int item_position) {
         return data.get(column_position).items.get(item_position);
     }
@@ -61,6 +66,14 @@ public class SimpleBoardAdapter extends BoardAdapter{
         TextView textView = (TextView)column.findViewById(R.id.textView);
         textView.setText(data.get(column_position).header);
         return column;
+    }
+
+    @Override
+    public View createFooterView(Context context, Object footer_object, int column_position) {
+        View footer = View.inflate(context, header_resource, null);
+        TextView textView = (TextView)footer.findViewById(R.id.textView);
+        textView.setText((String)footer_object);
+        return footer;
     }
 
     public static class SimpleColumn{

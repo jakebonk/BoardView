@@ -22,12 +22,13 @@ public abstract class BoardAdapter{
         columns.clear();
         for(int i = 0; i < getColumnCount();i++){
             ArrayList<View> views = new ArrayList<>();
-            Column column = new Column(createHeaderView(context,createHeaderObject(i),i),views);
+            Column column = new Column(createHeaderView(context,createHeaderObject(i),i),views,createFooterView(context,createFooterObject(i),i));
             for(int j = 0; j < getItemCount(i);j++){
                 column.objects.add(createItemObject(i,j));
                 views.add(createItemView(context,createHeaderObject(i),createItemObject(i,j),i,j));
             }
             column.header_object = createHeaderObject(i);
+            column.footer_object = createFooterObject(i);
             columns.add(column);
         }
     }
@@ -35,11 +36,14 @@ public abstract class BoardAdapter{
     public class Column{
         public View header;
         public Object header_object;
+        public Object footer_object;
+        public View footer;
         public ArrayList<View> views = new ArrayList<>();
         public ArrayList<Object> objects = new ArrayList<>();
-        public Column(View header, ArrayList<View> views){
+        public Column(View header, ArrayList<View> views,View footer){
             this.header = header;
             this.views = views;
+            this.footer = footer;
         }
 
     }
@@ -55,8 +59,10 @@ public abstract class BoardAdapter{
     public abstract int getColumnCount();
     public abstract int getItemCount(int column_position);
     public abstract Object createHeaderObject(int column_position);
+    public abstract Object createFooterObject(int column_position);
     public abstract Object createItemObject(int column_position,int item_position);
     public abstract View createItemView(Context context,Object header_object, Object item,int column_position,int item_position);
     public abstract View createHeaderView(Context context,Object header_object,int column_position);
+    public abstract View createFooterView(Context context,Object footer_object,int column_position);
 
 }
