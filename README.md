@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:1.1.7'
+	        compile 'com.github.jakebonk:BoardView:1.1.8'
 	}
 ```
 ## Usage
@@ -95,7 +95,7 @@ There is also a listener for when the BoardView has finished creating and assign
 
 ```
 
-This is how to set the click listener for a item and header, which gives their respective positions.
+This is how to set the click listener for a item, header and footer, which gives their respective positions.
 	
 ```java
 	
@@ -109,6 +109,12 @@ This is how to set the click listener for a item and header, which gives their r
             @Override
             public void onClick(View v, int column_pos) {
                 
+            }
+        });	
+	boardView.setOnFooterClickListener(new BoardView.FooterClickListener() {
+            @Override
+            public void onClick(View v, int column_pos) {
+	    
             }
         });
 
