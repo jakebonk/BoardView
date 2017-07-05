@@ -19,8 +19,10 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<SimpleBoardAdapter.SimpleColumn> data = new ArrayList<>();
         ArrayList<String> list = new ArrayList<String>();
         list.add("Item 1");
+        list.add("Item 1");
+        list.add("Item 1");
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 1",list));
-        data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",list));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",new ArrayList<String>()));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 3",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 4",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",list));

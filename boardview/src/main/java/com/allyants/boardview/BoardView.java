@@ -602,16 +602,18 @@ public class BoardView extends FrameLayout {
             @Override
             public void onAnimationStart(Animation animation) {
                 handler.post(createRunnable(parent,startTime,startScale,endScale));
+                parent.init();
                 can_scroll = false;
             }
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                parent.scale = endScale;
+                parent.setScale(endScale);
                 scrollToColumn(mLastSwap,true);
                 parent.requestLayout();
                 parent.invalidate();
                 can_scroll = true;
+
             }
 
             @Override
@@ -631,7 +633,7 @@ public class BoardView extends FrameLayout {
                     scale_time = 1;
                 }
                 scrollToColumn(mLastSwap,true);
-                parent.scale = startScale + (endScale - startScale)*scale_time;
+                parent.setScale(startScale + (endScale - startScale)*scale_time);
                 parent.requestLayout();
                 parent.invalidate();
                 if(scale_time != 1) {
@@ -715,38 +717,36 @@ public class BoardView extends FrameLayout {
                 }
             });
         }
-        if(items.size() > 0){
-            parent_layout.addView(scroll_view);
-            scroll_view.addView(layout_children);
-            for(int i = 0;i < items.size();i++){
-                final View view = items.get(i);
-                removeParent(view);
-                layout_children.addView(view);
-                final int finalI = i;
-                view.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        int pos = mParentLayout.indexOfChild(parent_layout);
-                        itemClickListener.onClick(v,pos, finalI);
-                    }
-                });
-                view.setOnLongClickListener(new OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (mDragItemStartCallback == null) {
-                            return false;
-                        }
-                        originalPosition = mParentLayout.indexOfChild((LinearLayout)((LinearLayout)view.getParent()).getParent().getParent());
-                        originalItemPosition = ((LinearLayout)view.getParent()).indexOfChild(view);
-                        mDragItemStartCallback.startDrag(view,originalPosition,originalItemPosition);
-                        mCellSubIsMobile = true;
-                        mobileView = (View)(view);
-                        mHoverCell = getAndAddHoverView(mobileView,1);
-                        mobileView.setVisibility(INVISIBLE);
+        parent_layout.addView(scroll_view);
+        scroll_view.addView(layout_children);
+        for(int i = 0;i < items.size();i++){
+            final View view = items.get(i);
+            removeParent(view);
+            layout_children.addView(view);
+            final int finalI = i;
+            view.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = mParentLayout.indexOfChild(parent_layout);
+                    itemClickListener.onClick(v,pos, finalI);
+                }
+            });
+            view.setOnLongClickListener(new OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (mDragItemStartCallback == null) {
                         return false;
                     }
-                });
-            }
+                    originalPosition = mParentLayout.indexOfChild((LinearLayout)((LinearLayout)view.getParent()).getParent().getParent());
+                    originalItemPosition = ((LinearLayout)view.getParent()).indexOfChild(view);
+                    mDragItemStartCallback.startDrag(view,originalPosition,originalItemPosition);
+                    mCellSubIsMobile = true;
+                    mobileView = (View)(view);
+                    mHoverCell = getAndAddHoverView(mobileView,1);
+                    mobileView.setVisibility(INVISIBLE);
+                    return false;
+                }
+            });
         }
         if(footer != null) {
             removeParent(footer);

@@ -10,7 +10,8 @@ import android.widget.LinearLayout;
 
 public class BoardItem extends LinearLayout {
     int originalWidth = 0;
-    public float scale = 1f;
+    int originalHeight = 0;
+    private float scale = 1f;
     public BoardItem(Context context) {
         super(context);
     }
@@ -23,14 +24,30 @@ public class BoardItem extends LinearLayout {
         super(context, attrs, defStyleAttr);
     }
 
+    public void init(){
+//        originalHeight = 0;
+//        originalWidth = 0;
+    }
+
+    public void setScale(float scale){
+        this.scale = scale;
+    }
+
+    public float getScale(){
+        return scale;
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-        if(getWidth() > 0 && scale != 1f) {
+        if(getHeight() > 0 && getWidth() > 0 && scale != 1f) {
             if(originalWidth == 0){
                 originalWidth = getWidth();
             }
-            this.setMeasuredDimension((int) (originalWidth * scale), (int) (originalWidth * scale));
+            if(originalHeight == 0){
+                originalHeight = getHeight();
+            }
+            this.setMeasuredDimension((int) (originalWidth * scale), (int) (originalHeight * scale));
         }else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
