@@ -48,6 +48,18 @@ public class SimpleBoardAdapter extends BoardAdapter{
     }
 
     @Override
+    public boolean isColumnLocked(int column_position) {
+        return false;
+    }
+
+    @Override
+    public boolean isItemLocked(int column_position) {
+        if(column_position == 2)
+            return true;
+        return false;
+    }
+
+    @Override
     public View createItemView(Context context,Object header_object,Object item_object,int column_position, int item_position) {
         View item = View.inflate(context, item_resource, null);
         TextView textView = (TextView)item.findViewById(R.id.textView);
@@ -64,7 +76,11 @@ public class SimpleBoardAdapter extends BoardAdapter{
     public View createHeaderView(Context context,Object header_object,int column_position) {
         View column = View.inflate(context, header_resource, null);
         TextView textView = (TextView)column.findViewById(R.id.textView);
-        textView.setText(data.get(column_position).header);
+        if(column_position == 2){
+            textView.setText("Locked!");
+        }else {
+            textView.setText(data.get(column_position).header);
+        }
         return column;
     }
 
@@ -73,7 +89,7 @@ public class SimpleBoardAdapter extends BoardAdapter{
         View footer = View.inflate(context, header_resource, null);
         TextView textView = (TextView)footer.findViewById(R.id.textView);
         textView.setText((String)footer_object);
-        return footer;
+        return null;
     }
 
     public static class SimpleColumn{

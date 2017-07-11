@@ -21,13 +21,13 @@ public class MainActivity extends AppCompatActivity {
         list.add("Item 1");
         list.add("Item 1");
         list.add("Item 1");
+        ArrayList<String> empty = new ArrayList<String>();
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 1",list));
-        data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",new ArrayList<String>()));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",empty));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 3",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 4",list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",list));
         final SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
-
         boardView.setAdapter(boardAdapter);
         boardView.setAdapter(boardAdapter);
         boardView.setOnDoneListener(new BoardView.DoneListener() {

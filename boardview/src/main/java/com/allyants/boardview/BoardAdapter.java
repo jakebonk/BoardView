@@ -27,6 +27,8 @@ public abstract class BoardAdapter{
                 column.objects.add(createItemObject(i,j));
                 views.add(createItemView(context,createHeaderObject(i),createItemObject(i,j),i,j));
             }
+            column.items_locked = isItemLocked(i);
+            column.column_locked = isColumnLocked(i);
             column.header_object = createHeaderObject(i);
             column.footer_object = createFooterObject(i);
             columns.add(column);
@@ -38,6 +40,8 @@ public abstract class BoardAdapter{
         public Object header_object;
         public Object footer_object;
         public View footer;
+        public Boolean column_locked = false;
+        public Boolean items_locked =  false;
         public ArrayList<View> views = new ArrayList<>();
         public ArrayList<Object> objects = new ArrayList<>();
         public Column(View header, ArrayList<View> views,View footer){
@@ -61,6 +65,8 @@ public abstract class BoardAdapter{
     public abstract Object createHeaderObject(int column_position);
     public abstract Object createFooterObject(int column_position);
     public abstract Object createItemObject(int column_position,int item_position);
+    public abstract boolean isColumnLocked(int column_position);
+    public abstract boolean isItemLocked(int column_position);
     public abstract View createItemView(Context context,Object header_object, Object item,int column_position,int item_position);
     public abstract View createHeaderView(Context context,Object header_object,int column_position);
     public abstract View createFooterView(Context context,Object footer_object,int column_position);

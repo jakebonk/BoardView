@@ -13,7 +13,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -237,7 +236,7 @@ public class BoardView extends FrameLayout {
         boardAdapter.createColumns();
         for(int i = 0;i < boardAdapter.columns.size();i++){
             BoardAdapter.Column column = boardAdapter.columns.get(i);
-            addColumnList(column.header,column.views,column.footer);
+            addColumnList(column.header,column.views,column.footer,i);
         }
     }
 
@@ -426,13 +425,24 @@ public class BoardView extends FrameLayout {
             }
         }
         int columnPos = mParentLayout.indexOfChild((View)(mobileView.getParent().getParent().getParent()));
-        View leftView = mParentLayout.getChildAt(columnPos - 1);
+
+        int leftPos = 1;
+        while (columnPos - leftPos > 0 && boardAdapter.columns.get(columnPos - leftPos).items_locked){
+            leftPos++;
+        }
+        View leftView = mParentLayout.getChildAt(columnPos - leftPos);
         View currentView = mParentLayout.getChildAt(columnPos);
-        View rightView = mParentLayout.getChildAt(columnPos + 1);
+        int rightPos = 1;
+        while(boardAdapter.columns.size() > columnPos+rightPos && boardAdapter.columns.get(columnPos + rightPos).items_locked){
+            rightPos++;
+        }
+        View rightView = mParentLayout.getChildAt(columnPos + rightPos);
+        View firstLeftView = mParentLayout.getChildAt(columnPos-1);
+        View firstRightView = mParentLayout.getChildAt(columnPos+1);
 
         if(leftView != null){
             int[] locationLeft = new int[2];
-            leftView.getLocationOnScreen(locationLeft);
+            firstLeftView.getLocationOnScreen(locationLeft);
             if (locationLeft[0] + leftView.getWidth() > mLastEventX) {
                 int pos = ((LinearLayout)mobileView.getParent()).indexOfChild(mobileView);
                 if(last_swap_item <= System.currentTimeMillis() - mDelaySwapItem) {
@@ -440,7 +450,7 @@ public class BoardView extends FrameLayout {
                     if(((LinearLayout)mobileView.getParent()) != null) {
                         ((LinearLayout) mobileView.getParent()).removeViewAt(pos);
                         ((LinearLayout)((ScrollView)((ViewGroup)leftView).getChildAt(1)).getChildAt(0)).addView(mobileView);
-                        scrollToColumn(columnPos-1,true);
+                        scrollToColumn(columnPos-leftPos,true);
                         int newItemPos = ((LinearLayout)((ViewGroup)leftView).getChildAt(0)).indexOfChild(mobileView)-1;
                         int newColumnPos = ((LinearLayout)mobileView.getParent().getParent().getParent()).indexOfChild((View)(mobileView.getParent().getParent()));
                         mDragItemStartCallback.changedPosition(mobileView,originalItemPosition,originalPosition,newItemPos,newColumnPos);
@@ -450,7 +460,7 @@ public class BoardView extends FrameLayout {
         }
         if(rightView != null){
             int[] locationRight = new int[2];
-            rightView.getLocationOnScreen(locationRight);
+            firstRightView.getLocationOnScreen(locationRight);
             if (locationRight[0] < mLastEventX) {
                 int pos = ((LinearLayout)mobileView.getParent()).indexOfChild(mobileView);
                 if(last_swap_item <= System.currentTimeMillis() - mDelaySwapItem) {
@@ -458,7 +468,7 @@ public class BoardView extends FrameLayout {
                     if(((LinearLayout)mobileView.getParent()) != null) {
                         ((LinearLayout) mobileView.getParent()).removeViewAt(pos);
                         ((LinearLayout)((ScrollView)((ViewGroup)rightView).getChildAt(1)).getChildAt(0)).addView(mobileView);
-                        scrollToColumn(columnPos+1,true);
+                        scrollToColumn(columnPos+rightPos,true);
                         int newItemPos = ((LinearLayout)((ViewGroup)rightView).getChildAt(0)).indexOfChild(mobileView)-1;
                         int newColumnPos = ((LinearLayout)mobileView.getParent().getParent().getParent()).indexOfChild((View)(mobileView.getParent().getParent()));
                         mDragItemStartCallback.changedPosition(mobileView,originalItemPosition,originalPosition,newItemPos,newColumnPos);
@@ -469,6 +479,7 @@ public class BoardView extends FrameLayout {
 
     }
 
+    //Change int change to position to fix problem with starting from the bottom
     private void switchItemFromPosition(int change,View view){
         LinearLayout parentLayout = (LinearLayout)(view.getParent());
         int columnPos = parentLayout.indexOfChild(view);
@@ -546,8 +557,6 @@ public class BoardView extends FrameLayout {
                 LinearLayout parentLayout = (LinearLayout)(mobileView.getParent().getParent().getParent().getParent());
                 int columnPos = parentLayout.indexOfChild((View)(mobileView.getParent().getParent().getParent()));
                 int pos = ((LinearLayout)mobileView.getParent()).indexOfChild(mobileView);
-                Log.e("ee",String.valueOf(originalPosition));
-                Log.e("ee",String.valueOf(originalItemPosition));
                 View tmpView = boardAdapter.columns.get(originalPosition).views.get(originalItemPosition);
                 boardAdapter.columns.get(originalPosition).views.remove(originalItemPosition);
                 boardAdapter.columns.get(columnPos).views.add(pos,tmpView);
@@ -651,7 +660,7 @@ public class BoardView extends FrameLayout {
         }
     }
 
-    private void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable final View footer){
+    private void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable final View footer,int column_pos){
         final BoardItem parent_layout = new BoardItem(getContext());
         parent_layout.setBackgroundColor(background_color);
         final LinearLayout layout = new LinearLayout(getContext());
@@ -689,33 +698,34 @@ public class BoardView extends FrameLayout {
                     headerClickListener.onClick(v,pos);
                 }
             });
-            header.setOnLongClickListener(new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mDragColumnStartCallback == null) {
+            if(!boardAdapter.columns.get(column_pos).column_locked) {
+                header.setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        if (mDragColumnStartCallback == null) {
+                            return false;
+                        }
+                        originalPosition = mParentLayout.indexOfChild(parent_layout);
+                        mDragColumnStartCallback.startDrag(layout, originalPosition);
+                        mLastSwap = originalPosition;
+                        for (int i = 0; i < mParentLayout.getChildCount(); i++) {
+                            BoardItem parentView = (BoardItem) mParentLayout.getChildAt(i);//Gets the parent layout
+                            for (int j = 0; j < parentView.getChildCount(); j++) {
+                                View childView = ((LinearLayout) parentView).getChildAt(j);
+                                scrollToColumn(originalPosition, true);
+                                scaleView(childView, parentView, 1f, GLOBAL_SCALE);
+                            }
+                        }
+
+                        scrollToColumn(originalPosition, false);
+                        mCellIsMobile = true;
+                        mobileView = (View) (parent_layout);
+                        mHoverCell = getAndAddHoverView(mobileView, GLOBAL_SCALE);
+                        mobileView.setVisibility(INVISIBLE);
                         return false;
                     }
-                    originalPosition = mParentLayout.indexOfChild(parent_layout);
-                    Log.e("eeeee",String.valueOf(originalPosition));
-                    mDragColumnStartCallback.startDrag(layout,originalPosition);
-                    mLastSwap = originalPosition;
-                    for(int i = 0;i < mParentLayout.getChildCount();i++){
-                        BoardItem parentView = (BoardItem)mParentLayout.getChildAt(i);//Gets the parent layout
-                        for(int j = 0;j < parentView.getChildCount();j++) {
-                            View childView = ((LinearLayout) parentView).getChildAt(j);
-                            scrollToColumn(originalPosition, true);
-                            scaleView(childView, parentView, 1f, GLOBAL_SCALE);
-                        }
-                    }
-
-                    scrollToColumn(originalPosition,false);
-                    mCellIsMobile = true;
-                    mobileView = (View)(parent_layout);
-                    mHoverCell = getAndAddHoverView(mobileView,GLOBAL_SCALE);
-                    mobileView.setVisibility(INVISIBLE);
-                    return false;
-                }
-            });
+                });
+            }
         }
         parent_layout.addView(scroll_view);
         scroll_view.addView(layout_children);
@@ -731,22 +741,24 @@ public class BoardView extends FrameLayout {
                     itemClickListener.onClick(v,pos, finalI);
                 }
             });
-            view.setOnLongClickListener(new OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    if (mDragItemStartCallback == null) {
+            if(!boardAdapter.columns.get(column_pos).items_locked) {
+                view.setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        if (mDragItemStartCallback == null) {
+                            return false;
+                        }
+                        originalPosition = mParentLayout.indexOfChild((LinearLayout) ((LinearLayout) view.getParent()).getParent().getParent());
+                        originalItemPosition = ((LinearLayout) view.getParent()).indexOfChild(view);
+                        mDragItemStartCallback.startDrag(view, originalPosition, originalItemPosition);
+                        mCellSubIsMobile = true;
+                        mobileView = (View) (view);
+                        mHoverCell = getAndAddHoverView(mobileView, 1);
+                        mobileView.setVisibility(INVISIBLE);
                         return false;
                     }
-                    originalPosition = mParentLayout.indexOfChild((LinearLayout)((LinearLayout)view.getParent()).getParent().getParent());
-                    originalItemPosition = ((LinearLayout)view.getParent()).indexOfChild(view);
-                    mDragItemStartCallback.startDrag(view,originalPosition,originalItemPosition);
-                    mCellSubIsMobile = true;
-                    mobileView = (View)(view);
-                    mHoverCell = getAndAddHoverView(mobileView,1);
-                    mobileView.setVisibility(INVISIBLE);
-                    return false;
-                }
-            });
+                });
+            }
         }
         if(footer != null) {
             removeParent(footer);
