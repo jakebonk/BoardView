@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:1.1.9'
+	        compile 'com.github.jakebonk:BoardView:1.2.0'
 	}
 ```
 ## Usage
@@ -123,6 +123,19 @@ This is how to set the click listener for a item, header and footer, which gives
 ### Creating your own BoardAdapter
 
 Creating a custom BoardAdapter is pretty similar to that of a BaseAdapter, the main focus being to create some type of object that help you create your custom views for both headers and items.
+The adapter also has two new abstract methods called, isColumnLocked when true prevents the column from being draggable. isItemLocked will not allow item to be dragged to or from this column.
+
+```java
+	@Override
+	public boolean isColumnLocked(int column_position) {
+		return false;
+	}
+
+	@Override
+	public boolean isItemLocked(int column_position) {		
+		return false;
+	}
+```
 
 ### Things to fix
 There is a scaling issue when the column is beginning dragging or has ended dragging. I know this is an issue but I don't know of a good way to solve this at the moment. I eventually will fix it but for now I'm putting it on the back burners.
