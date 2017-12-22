@@ -3,6 +3,7 @@ package com.allyants.boardviewexample;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.allyants.boardview.BoardView;
@@ -60,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
+            public void dragging(View itemView, MotionEvent event) {
+                Log.e("Pos X",String.valueOf(event.getRawX()));
+                Log.e("Pos Y",String.valueOf(event.getRawY()));
+            }
+
+            @Override
             public void endDrag(View view, int i, int i1) {
                 Log.e("End Drag Column",String.valueOf(i1));
             }
@@ -79,6 +86,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void changedPosition(View view, int i, int i1, int i2, int i3) {
                 Log.e("Change Drag Item","Item: "+String.valueOf(i2)+"; Column:"+String.valueOf(i3));
+            }
+
+            @Override
+            public void dragging(View itemView, MotionEvent event) {
+                Log.e("Pos X",String.valueOf(event.getRawX()));
+                Log.e("Pos Y",String.valueOf(event.getRawY()));
             }
 
             @Override

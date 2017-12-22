@@ -96,6 +96,11 @@ public class BoardView extends FrameLayout {
         }
 
         @Override
+        public void dragging(View itemView, MotionEvent event) {
+
+        }
+
+        @Override
         public void endDrag(View itemView, int originalPosition, int newPosition) {
 
         }
@@ -109,6 +114,11 @@ public class BoardView extends FrameLayout {
 
         @Override
         public void changedPosition(View itemView, int originalPosition,int originalColumn, int newPosition, int newColumn) {
+
+        }
+
+        @Override
+        public void dragging(View itemView, MotionEvent event) {
 
         }
 
@@ -132,12 +142,14 @@ public class BoardView extends FrameLayout {
     public interface DragColumnStartCallback{
         void startDrag(View itemView, int originalPosition);
         void changedPosition(View itemView, int originalPosition, int newPosition);
+        void dragging(View itemView, MotionEvent event);
         void endDrag(View itemView, int originalPosition, int newPosition);
     }
 
     public interface DragItemStartCallback{
         void startDrag(View itemView, int originalPosition,int originalColumn);
         void changedPosition(View itemView, int originalPosition,int originalColumn, int newPosition, int newColumn);
+        void dragging(View itemView, MotionEvent event);
         void endDrag(View itemView, int originalPosition,int originalColumn, int newPosition, int newColumn);
     }
 
@@ -321,6 +333,8 @@ public class BoardView extends FrameLayout {
                 int deltaY = mLastEventY - mDownY;
 
                 if(mCellSubIsMobile){
+                    if(mDragItemStartCallback != null)
+                        mDragItemStartCallback.dragging(mobileView,event);
                     int offsetX = 0;
                     if(canDragHorizontal){
                         offsetX =  deltaX;
@@ -336,6 +350,8 @@ public class BoardView extends FrameLayout {
                     handleItemSwitchHorizontal();
                     return true;
                 }else if (mCellIsMobile) {
+                    if(mDragColumnStartCallback != null)
+                        mDragColumnStartCallback.dragging(mobileView,event);
                     int offsetX = 0;
                     if(canDragHorizontal){
                         offsetX =  deltaX;
