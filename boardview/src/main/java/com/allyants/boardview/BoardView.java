@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -343,9 +344,9 @@ public class BoardView extends FrameLayout {
                     if(canDragVertical){
                         offsetY = mHoverCellOriginalBounds.top + deltaY;
                     }
-                    mHoverCellCurrentBounds.offsetTo(offsetX,
-                            offsetY);
                     mHoverCell.setBounds(rotatedBounds(mHoverCellCurrentBounds,0.0523599f));
+                    mHoverCellCurrentBounds.offsetTo(offsetX,
+                            mLastEventY - 330);
                     invalidate();
                     handleItemSwitchHorizontal();
                     return true;
@@ -360,9 +361,9 @@ public class BoardView extends FrameLayout {
                     if(canDragVertical){
                         offsetY = mHoverCellOriginalBounds.top + deltaY + mTotalOffsetY;
                     }
+                    mHoverCell.setBounds(rotatedBounds(mHoverCellCurrentBounds,0.0523599f));
                     mHoverCellCurrentBounds.offsetTo(offsetX,
                             offsetY);
-                    mHoverCell.setBounds(rotatedBounds(mHoverCellCurrentBounds,0.0523599f));
                     invalidate();
                     handleColumnSwitchHorizontal();
 
@@ -408,35 +409,37 @@ public class BoardView extends FrameLayout {
         }
     }
 
+    //checks if item should be switched between columns
     private void handleItemSwitchHorizontal(){
         int itemPos = ((LinearLayout)(mobileView.getParent())).indexOfChild(mobileView);
         View aboveView = ((LinearLayout)(mobileView.getParent())).getChildAt(itemPos - 1);
         View belowView = ((LinearLayout)(mobileView.getParent())).getChildAt(itemPos + 1);
-        //swapping above
         int[] location = new int[2];
         mobileView.getLocationOnScreen(location);
         int[] parentLocation = new int[2];
         ScrollView parent = ((ScrollView)((LinearLayout)mobileView.getParent()).getParent());
         parent.getLocationOnScreen(parentLocation);
-        if(location[1]-mobileView.getHeight() < parentLocation[1]){
+        if(mLastEventY < parentLocation[1]+200){
             parent.smoothScrollBy(0,-10);
         }
-        if(location[1]+mobileView.getHeight()+mobileView.getHeight() > parentLocation[1]+parent.getHeight()){
+        if(mLastEventY > parentLocation[1]+parent.getHeight()-200){
             parent.smoothScrollBy(0,10);
         }
+        //swapping above
         if(aboveView != null){
             int[] locationAbove = new int[2];
             aboveView.getLocationInWindow(locationAbove);
 
-            if(locationAbove[1]+aboveView.getHeight() > mLastEventY){
+            if(locationAbove[1]+aboveView.getHeight()/2 > mLastEventY){
                 switchItemFromPosition(-1,mobileView);
+                Log.e("t","swap");
             }
         }
         //swapping below
         if(belowView != null){
             int[] locationBelow = new int[2];
             belowView.getLocationOnScreen(locationBelow);
-            if(locationBelow[1] < mLastEventY){
+            if(locationBelow[1] + belowView.getHeight()/2 < mLastEventY){
                 switchItemFromPosition(1,mobileView);
             }
         }
@@ -465,7 +468,8 @@ public class BoardView extends FrameLayout {
                     last_swap_item = System.currentTimeMillis();
                     if(((LinearLayout)mobileView.getParent()) != null) {
                         ((LinearLayout) mobileView.getParent()).removeViewAt(pos);
-                        ((LinearLayout)((ScrollView)((ViewGroup)leftView).getChildAt(1)).getChildAt(0)).addView(mobileView);
+                        LinearLayout layout = ((LinearLayout)((ScrollView)((ViewGroup)leftView).getChildAt(1)).getChildAt(0));
+                        layout.addView(mobileView,getPositionInList(mLastEventY,layout));
                         scrollToColumn(columnPos-leftPos,true);
                         int newItemPos = ((LinearLayout)((ViewGroup)leftView).getChildAt(0)).indexOfChild(mobileView)-1;
                         int newColumnPos = ((LinearLayout)mobileView.getParent().getParent().getParent()).indexOfChild((View)(mobileView.getParent().getParent()));
@@ -483,7 +487,8 @@ public class BoardView extends FrameLayout {
                     last_swap_item = System.currentTimeMillis();
                     if(((LinearLayout)mobileView.getParent()) != null) {
                         ((LinearLayout) mobileView.getParent()).removeViewAt(pos);
-                        ((LinearLayout)((ScrollView)((ViewGroup)rightView).getChildAt(1)).getChildAt(0)).addView(mobileView);
+                        LinearLayout layout = ((LinearLayout)((ScrollView)((ViewGroup)rightView).getChildAt(1)).getChildAt(0));
+                        layout.addView(mobileView,getPositionInList(mLastEventY,layout));
                         scrollToColumn(columnPos+rightPos,true);
                         int newItemPos = ((LinearLayout)((ViewGroup)rightView).getChildAt(0)).indexOfChild(mobileView)-1;
                         int newColumnPos = ((LinearLayout)mobileView.getParent().getParent().getParent()).indexOfChild((View)(mobileView.getParent().getParent()));
@@ -493,6 +498,19 @@ public class BoardView extends FrameLayout {
             }
         }
 
+    }
+
+    //Gets the position of a item inside a list based on the y offset
+    public int getPositionInList(int y,LinearLayout layout){
+        for(int i = 0; i < layout.getChildCount();i++){
+            int[] location = new int[2];
+            View view = layout.getChildAt(i);
+            view.getLocationOnScreen(location);
+            if(y > location[1] && y < location[1]+view.getHeight()){
+                return i;
+            }
+        }
+        return 0;
     }
 
     //Change int change to position to fix problem with starting from the bottom
