@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:1.2.0'
+	        compile 'com.github.jakebonk:BoardView:1.2.1'
 	}
 ```
 ## Usage
@@ -55,6 +55,11 @@ There are two types of drag listeners, the first is for columns
             public void changedPosition(View view, int startColumnPos, int newColumnPos) {
 
             }
+	    
+	    @Override
+            public void dragging(View itemView, MotionEvent event) {
+                
+            }
 
             @Override
             public void endDrag(View view, int startColumnPos, int endColumnPos) {
@@ -73,6 +78,11 @@ Similarly we can get the drag listener for items
             @Override
             public void changedPosition(View view, int startItemPos, int startColumnPos, int newItemPos, int newColumnPos) {
 
+            }
+	    
+	     @Override
+            public void dragging(View itemView, MotionEvent event) {
+	    
             }
 
             @Override
