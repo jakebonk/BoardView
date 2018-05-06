@@ -94,7 +94,7 @@ public abstract class BoardAdapter{
         column.header_object = createHeaderObject(index);
         column.footer_object = createFooterObject(index);
         column.header = createHeaderView(context,column.header_object,index);
-        column.footer = createHeaderView(context,column.footer_object,index);
+        column.footer = createFooterView(context,column.footer_object,index);
         TransitionManager.beginDelayedTransition(boardView, boardViewTransition);
         boardView.addColumnList(column.header,column.views,column.footer,index);
     }
