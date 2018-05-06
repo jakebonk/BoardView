@@ -7,76 +7,30 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.allyants.boardview.BoardView;
+import com.allyants.boardview.Item;
 import com.allyants.boardview.SimpleBoardAdapter;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+    ArrayList<Item> list = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final BoardView boardView = (BoardView)findViewById(R.id.boardView);
-        ArrayList<SimpleBoardAdapter.SimpleColumn> data = new ArrayList<>();
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("I am a very long list that is not the same size as the others. I am a multiline");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        list.add("Item 1");
-        ArrayList<String> empty = new ArrayList<String>();
-        data.add(new SimpleBoardAdapter.SimpleColumn("Column 1",list));
-        data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",empty));
-        data.add(new SimpleBoardAdapter.SimpleColumn("Column 3",list));
-        data.add(new SimpleBoardAdapter.SimpleColumn("Column 4",list));
-        data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",list));
+        final ArrayList<SimpleBoardAdapter.SimpleColumn> data = new ArrayList<>();
+        list.add(new Item("Item 1"));
+        list.add(new Item("Item 1"));
+        list.add(new Item("Item 1"));
+        list.add(new Item("Item 1"));
+        list.add(new Item("I am a very long list that is not the same size as the others. I am a multiline"));
+        list.add(new Item("Item 1"));
+        final ArrayList<Item> empty = new ArrayList<>();
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 1",(ArrayList)list));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",(ArrayList)empty));
         final SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
-        boardView.setAdapter(boardAdapter);
         boardView.setAdapter(boardAdapter);
         boardView.setOnDoneListener(new BoardView.DoneListener() {
             @Override
@@ -87,13 +41,13 @@ public class MainActivity extends AppCompatActivity {
         boardView.setOnItemClickListener(new BoardView.ItemClickListener() {
             @Override
             public void onClick(View v, int column_pos, int item_pos) {
-                boardView.scrollToColumn(column_pos,false);
+                Log.e("OnClickItem","Column Pos: "+String.valueOf(column_pos)+ " Item Pos: "+String.valueOf(item_pos));
             }
         });
         boardView.setOnHeaderClickListener(new BoardView.HeaderClickListener() {
             @Override
             public void onClick(View v, int column_pos) {
-                Log.e("ee",String.valueOf(column_pos));
+                Log.e("OnClickItem","Column Pos: "+String.valueOf(column_pos));
             }
         });
         boardView.setOnDragColumnListener(new BoardView.DragColumnStartCallback() {
@@ -146,6 +100,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("End Drag Item","Item: "+String.valueOf(i2)+"; Column:"+String.valueOf(i3));
             }
         });
-
     }
+
 }
