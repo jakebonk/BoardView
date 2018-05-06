@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:1.2.2'
+	        compile 'com.github.jakebonk:BoardView:1.3.0'
 	}
 ```
 ## Usage
@@ -43,6 +43,22 @@ BoardView utilizes a BoardAdapter, SimpleBoardAdapter is an example of how to ex
         SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
         boardView.setAdapter(boardAdapter);
 ```
+To manipulate the BoardView simply call one of the new functions in BoardAdapter
+
+```java
+void removeColumn(int index)
+void removeItem(int column, int index)
+void addItem(int column,int index, Object item)
+void addColumn(int index, Column column)
+```
+
+I also added the ability to set Transition animations when adding items/columns.
+
+```java
+ void SetColumnTransition(Transition t)
+ void SetItemTransition(Transition t)
+```
+
 There are two types of drag listeners, the first is for columns
 ```java
 	 boardView.setOnDragColumnListener(new BoardView.DragColumnStartCallback() {
