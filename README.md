@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        compile 'com.github.jakebonk:BoardView:1.3.0'
+	        implementation 'com.github.jakebonk:BoardView:1.3.2'
 	}
 ```
 ## Usage
@@ -143,6 +143,18 @@ This is how to set the click listener for a item, header and footer, which gives
 	    
             }
         });
+
+```
+
+By setting SetColumnSnap you can allow the BoardView to snap to the closest column when scrolling, this is activated by default. To set it back to normal just set it to false
+
+```java
+
+boardView.SetColumnSnap(true);
+	
+	or
+	
+boardView.SetColumnSnap(false);
 
 ```
 	
