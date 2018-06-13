@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -40,6 +41,9 @@ public class BoardView extends FrameLayout {
     private BitmapDrawable mHoverCell;
     private Rect mHoverCellCurrentBounds;
     private Rect mHoverCellOriginalBounds;
+    private boolean columnSnap;
+    private boolean isTouched;
+    private boolean isSnapping;
 
     private int background_color;
 
@@ -266,6 +270,7 @@ public class BoardView extends FrameLayout {
         mParentLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         mRootLayout.addView(mParentLayout);
         addView(mRootLayout);
+        SetColumnSnap(true);
     }
 
     @Override
@@ -301,13 +306,77 @@ public class BoardView extends FrameLayout {
         return result;
     }
 
+    VelocityTracker mVelocityTracker = VelocityTracker.obtain();
+    public void SetColumnSnap(boolean columnSnap){
+        this.columnSnap = columnSnap;
+        mRootLayout.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                isTouched = true;
+                isSnapping = false;
+                switch (event.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        mVelocityTracker.clear();
+                        mVelocityTracker.addMovement(event);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        mVelocityTracker.addMovement(event);
+                        mVelocityTracker.computeCurrentVelocity(1000);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        isTouched = false;
+                        Log.e("Velocity",String.valueOf(mVelocityTracker.getXVelocity()));
+                        if(Math.abs(mVelocityTracker.getXVelocity()) < 230){
+                            int pos = getPositionInListX(mRootLayout.getWidth()/2,mParentLayout);
+                            Log.e("Pos",String.valueOf(pos));
+                            scrollToColumn(pos,true);
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+        if(this.columnSnap) {
+            mRootLayout.setOnScrollChangeListener(onScrollChangeListener);
+        }else{
+            mRootLayout.setOnScrollChangeListener(null);
+        }
+    }
+
+    OnScrollChangeListener onScrollChangeListener = new OnScrollChangeListener() {
+        @Override
+        public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            if(!isTouched && !isSnapping && mParentLayout.getChildCount() > 0) {
+                int deltaX = Math.abs(oldScrollX - scrollX);
+                if(deltaX < 3){
+                    //Scroll To closest column
+                    isSnapping = true;
+                    int[] location = new int[2];
+                    mParentLayout.getLocationOnScreen(location);
+                    int offset = (mParentLayout.getChildAt(0).getWidth())/2;
+                    if(oldScrollX - scrollX <= 0){
+                        offset *= 2;
+                    }
+                    int x = scrollX+location[0]+offset;
+                    int pos = getPositionInListX(x,mParentLayout);
+                    scrollToColumn(pos,true);
+                }
+            }
+        }
+    };
+
     public void scrollToColumn(int column,boolean animate){
         if(column >= 0) {
             View childView = mParentLayout.getChildAt(column);
             if(childView != null) {
-                int newX = childView.getLeft() - (int) (((getMeasuredWidth() - childView.getMeasuredWidth()) / 2));
+                final int newX = childView.getLeft() - (int) (((getMeasuredWidth() - childView.getMeasuredWidth()) / 2));
                 if (animate) {
-                    mRootLayout.smoothScrollTo(newX, 0);
+                    mRootLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mRootLayout.smoothScrollTo(newX, 0);
+                        }
+                    });
                 } else {
                     mRootLayout.scrollTo(newX, 0);
                 }
@@ -471,7 +540,7 @@ public class BoardView extends FrameLayout {
                     if(((LinearLayout)mobileView.getParent()) != null) {
                         ((LinearLayout) mobileView.getParent()).removeViewAt(pos);
                         LinearLayout layout = ((LinearLayout)((ScrollView)((ViewGroup)leftView).getChildAt(1)).getChildAt(0));
-                        layout.addView(mobileView,getPositionInList(mLastEventY,layout));
+                        layout.addView(mobileView,getPositionInListY(mLastEventY,layout));
                         scrollToColumn(columnPos-leftPos,true);
                         int newItemPos = ((LinearLayout)((ViewGroup)leftView).getChildAt(0)).indexOfChild(mobileView)-1;
                         int newColumnPos = ((LinearLayout)mobileView.getParent().getParent().getParent()).indexOfChild((View)(mobileView.getParent().getParent()));
@@ -490,7 +559,7 @@ public class BoardView extends FrameLayout {
                     if(((LinearLayout)mobileView.getParent()) != null) {
                         ((LinearLayout) mobileView.getParent()).removeViewAt(pos);
                         LinearLayout layout = ((LinearLayout)((ScrollView)((ViewGroup)rightView).getChildAt(1)).getChildAt(0));
-                        layout.addView(mobileView,getPositionInList(mLastEventY,layout));
+                        layout.addView(mobileView,getPositionInListY(mLastEventY,layout));
                         scrollToColumn(columnPos+rightPos,true);
                         int newItemPos = ((LinearLayout)((ViewGroup)rightView).getChildAt(0)).indexOfChild(mobileView)-1;
                         int newColumnPos = ((LinearLayout)mobileView.getParent().getParent().getParent()).indexOfChild((View)(mobileView.getParent().getParent()));
@@ -503,12 +572,31 @@ public class BoardView extends FrameLayout {
     }
 
     //Gets the position of a item inside a list based on the y offset
-    public int getPositionInList(int y,LinearLayout layout){
+    public int getPositionInListY(int y,LinearLayout layout){
         for(int i = 0; i < layout.getChildCount();i++){
             int[] location = new int[2];
             View view = layout.getChildAt(i);
             view.getLocationOnScreen(location);
             if(y > location[1] && y < location[1]+view.getHeight()){
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    //Gets the position of a item inside a list based on the y offset
+    public int getPositionInListX(int x,LinearLayout layout){
+        for(int i = 0; i < layout.getChildCount();i++){
+            int[] location = new int[2];
+            View view = layout.getChildAt(i);
+            int end = layout.getWidth();
+            if(layout.getChildCount() > i+1){
+                int[] end_location = new int[2];
+                layout.getChildAt(i+1).getLocationOnScreen(end_location);
+                end = end_location[0];
+            }
+            view.getLocationOnScreen(location);
+            if(x >= location[0] && x <= end){
                 return i;
             }
         }

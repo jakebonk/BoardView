@@ -30,6 +30,11 @@ public class MainActivity extends AppCompatActivity {
         final ArrayList<Item> empty = new ArrayList<>();
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 1",(ArrayList)list));
         data.add(new SimpleBoardAdapter.SimpleColumn("Column 2",(ArrayList)empty));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 3",(ArrayList)empty));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 4",(ArrayList)empty));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 5",(ArrayList)empty));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 6",(ArrayList)empty));
+        data.add(new SimpleBoardAdapter.SimpleColumn("Column 7",(ArrayList)empty));
         final SimpleBoardAdapter boardAdapter = new SimpleBoardAdapter(this,data);
         boardView.setAdapter(boardAdapter);
         boardView.setOnDoneListener(new BoardView.DoneListener() {
