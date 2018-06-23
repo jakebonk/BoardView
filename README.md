@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        implementation 'com.github.jakebonk:BoardView:1.3.2'
+	        implementation 'com.github.jakebonk:BoardView:1.3.3'
 	}
 ```
 ## Usage
@@ -174,6 +174,15 @@ The adapter also has two new abstract methods called, isColumnLocked when true p
 		return false;
 	}
 ```
+
+You can also set the maximum amount of items you want in a list. If -1 is returned then there will be no cap otherwise the returned value will be the cap. The example below allow only 4 items inside any given column.
+
+```java
+@Override
+    public int maxItemCount(int column_position) {
+        return 4;
+    }
+```    
 
 ### Things to fix
 There is a scaling issue when the column is beginning dragging or has ended dragging. I know this is an issue but I don't know of a good way to solve this at the moment. I eventually will fix it but for now I'm putting it on the back burners.
