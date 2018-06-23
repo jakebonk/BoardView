@@ -132,6 +132,7 @@ public abstract class BoardAdapter{
 
     public abstract int getColumnCount();
     public abstract int getItemCount(int column_position);
+    public abstract int maxItemCount(int column_position);
     public abstract Object createHeaderObject(int column_position);
     public abstract Object createFooterObject(int column_position);
     public abstract Object createItemObject(int column_position,int item_position);

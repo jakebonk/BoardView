@@ -55,7 +55,7 @@ public class SimpleBoardAdapter extends BoardAdapter{
 
     @Override
     public boolean isItemLocked(int column_position) {
-        return column_position == 2;
+        return false;
     }
 
     @Override
@@ -67,6 +67,11 @@ public class SimpleBoardAdapter extends BoardAdapter{
     }
 
     @Override
+    public int maxItemCount(int column_position) {
+        return 4;
+    }
+
+    @Override
     public void createColumns() {
         super.createColumns();
     }
@@ -75,11 +80,7 @@ public class SimpleBoardAdapter extends BoardAdapter{
     public View createHeaderView(Context context,Object header_object,int column_position) {
         View column = View.inflate(context, header_resource, null);
         TextView textView = (TextView)column.findViewById(R.id.textView);
-        if(column_position == 2){
-            textView.setText("Locked!");
-        }else {
-            textView.setText(columns.get(column_position).header_object.toString());
-        }
+        textView.setText(columns.get(column_position).header_object.toString());
         return column;
     }
 
