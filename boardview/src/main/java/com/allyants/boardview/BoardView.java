@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.ScaleAnimation;
@@ -807,13 +808,10 @@ public class BoardView extends FrameLayout {
                 ViewGroup parent_header = removeParent(boardAdapter.columns.get(column_pos).header);
                 boardAdapter.columns.get(column_pos).header = boardAdapter.createHeaderView(getContext(), boardAdapter.columns.get(column_pos).header_object, column_pos);
                 parent_header.addView(boardAdapter.columns.get(column_pos).header);
-            }
-            for(int item_pos = 0; item_pos < boardAdapter.columns.get(column_pos).objects.size();item_pos++){
-                ViewGroup parent_item = removeParent(boardAdapter.columns.get(column_pos).views.get(item_pos));
-                View view = boardAdapter.createItemView(getContext(), boardAdapter.columns.get(column_pos).header_object,boardAdapter.columns.get(column_pos).objects.get(item_pos), column_pos,item_pos);
-                boardAdapter.columns.get(column_pos).views.remove(item_pos);
-                boardAdapter.columns.get(column_pos).views.add(item_pos,view);
-                parent_item.addView(view);
+                ViewGroup layout = (ViewGroup)parent_header.getParent();
+                boardAdapter.columns.get(column_pos).header.setOnClickListener(createHeaderOnClickListener(layout));
+                boardAdapter.columns.get(column_pos).header.setOnLongClickListener(createHeaderOnLongClickListener(parent_header,layout));
+
             }
             if(boardAdapter.columns.get(column_pos).footer != null) {
                 ViewGroup parent_footer = removeParent(boardAdapter.columns.get(column_pos).footer);
@@ -821,6 +819,56 @@ public class BoardView extends FrameLayout {
                 parent_footer.addView(boardAdapter.columns.get(column_pos).footer);
             }
         }
+    }
+
+    private OnClickListener createHeaderOnClickListener(final View parent_layout){
+        return new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int pos = mParentLayout.indexOfChild(parent_layout);
+                scrollToColumn(pos,true);
+                headerClickListener.onClick(v,pos);
+            }
+        };
+    }
+
+    private OnLongClickListener createHeaderOnLongClickListener(final ViewGroup layout,final View parent_layout){
+        return new OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (mDragColumnStartCallback == null) {
+                    return false;
+                }
+                originalPosition = mParentLayout.indexOfChild(parent_layout);
+                mDragColumnStartCallback.startDrag(layout, originalPosition);
+                mLastSwap = originalPosition;
+                for (int i = 0; i < mParentLayout.getChildCount(); i++) {
+                    BoardItem parentView = (BoardItem) mParentLayout.getChildAt(i);//Gets the parent layout
+                    for (int j = 0; j < parentView.getChildCount(); j++) {
+                        View childView = ((LinearLayout) parentView).getChildAt(j);
+                        scrollToColumn(originalPosition, true);
+                        scaleView(childView, parentView, 1f, GLOBAL_SCALE);
+                    }
+                }
+
+                scrollToColumn(originalPosition, false);
+                mCellIsMobile = true;
+                mobileView = (View) (parent_layout);
+                mHoverCell = getAndAddHoverView(mobileView, GLOBAL_SCALE);
+                mobileView.setVisibility(INVISIBLE);
+                return false;
+            }
+        };
+    }
+
+    private OnClickListener createFooterOnClickListener(final View parent_layout){
+        return new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int column_pos = mParentLayout.indexOfChild(parent_layout);
+                footerClickListener.onClick(v,column_pos);
+            }
+        };
     }
 
     public void addColumnList(@Nullable View header, ArrayList<View> items, @Nullable final View footer,int column_pos){
@@ -854,41 +902,9 @@ public class BoardView extends FrameLayout {
             header.setId(HEADER_ID);
             removeParent(header);
             layout.addView(header);
-            header.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int pos = mParentLayout.indexOfChild(parent_layout);
-                    scrollToColumn(pos,true);
-                    headerClickListener.onClick(v,pos);
-                }
-            });
+            header.setOnClickListener(createHeaderOnClickListener(parent_layout));
             if(!boardAdapter.columns.get(column_pos).column_locked) {
-                header.setOnLongClickListener(new OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        if (mDragColumnStartCallback == null) {
-                            return false;
-                        }
-                        originalPosition = mParentLayout.indexOfChild(parent_layout);
-                        mDragColumnStartCallback.startDrag(layout, originalPosition);
-                        mLastSwap = originalPosition;
-                        for (int i = 0; i < mParentLayout.getChildCount(); i++) {
-                            BoardItem parentView = (BoardItem) mParentLayout.getChildAt(i);//Gets the parent layout
-                            for (int j = 0; j < parentView.getChildCount(); j++) {
-                                View childView = ((LinearLayout) parentView).getChildAt(j);
-                                scrollToColumn(originalPosition, true);
-                                scaleView(childView, parentView, 1f, GLOBAL_SCALE);
-                            }
-                        }
-
-                        scrollToColumn(originalPosition, false);
-                        mCellIsMobile = true;
-                        mobileView = (View) (parent_layout);
-                        mHoverCell = getAndAddHoverView(mobileView, GLOBAL_SCALE);
-                        mobileView.setVisibility(INVISIBLE);
-                        return false;
-                    }
-                });
+                header.setOnLongClickListener(createHeaderOnLongClickListener(layout,parent_layout));
             }
         }
         parent_layout.addView(scroll_view);
@@ -908,13 +924,7 @@ public class BoardView extends FrameLayout {
             layout.addView(footer);
             footer_layout.setLayoutParams(params);
             parent_layout.addView(footer_layout);
-            footer.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int column_pos = mParentLayout.indexOfChild(parent_layout);
-                    footerClickListener.onClick(v,column_pos);
-                }
-            });
+            footer.setOnClickListener(createFooterOnClickListener(parent_layout));
             footer.post(new Runnable() {
                 @Override
                 public void run() {

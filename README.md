@@ -21,7 +21,7 @@ Add this to your build.gradle file for your app.
 Add this to your dependencies in build.gradle for your project.
 ```java
 	dependencies {
-	        implementation 'com.github.jakebonk:BoardView:1.3.5'
+	        implementation 'com.github.jakebonk:BoardView:1.3.6'
 	}
 ```
 ## Usage
