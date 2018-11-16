@@ -45,6 +45,8 @@ public class BoardView extends FrameLayout {
     private boolean isTouched;
     private boolean isSnapping;
 
+    private int HEADER_ID = generateViewId();
+
     private int background_color;
 
     private HorizontalScrollView mRootLayout;
@@ -788,10 +790,36 @@ public class BoardView extends FrameLayout {
         return runnable;
     }
 
-    private void removeParent(View view){
+    private ViewGroup removeParent(View view){
+        if(view == null){
+            return null;
+        }
         ViewGroup viewGroup = ((ViewGroup)view.getParent());
         if(viewGroup != null){
             viewGroup.removeView(view);
+        }
+        return viewGroup;
+    }
+
+    public void notifyDataSetChanged(){
+        for(int column_pos = 0; column_pos < boardAdapter.columns.size(); column_pos++) {
+            if(boardAdapter.columns.get(column_pos).header != null) {
+                ViewGroup parent_header = removeParent(boardAdapter.columns.get(column_pos).header);
+                boardAdapter.columns.get(column_pos).header = boardAdapter.createHeaderView(getContext(), boardAdapter.columns.get(column_pos).header_object, column_pos);
+                parent_header.addView(boardAdapter.columns.get(column_pos).header);
+            }
+            for(int item_pos = 0; item_pos < boardAdapter.columns.get(column_pos).objects.size();item_pos++){
+                ViewGroup parent_item = removeParent(boardAdapter.columns.get(column_pos).views.get(item_pos));
+                View view = boardAdapter.createItemView(getContext(), boardAdapter.columns.get(column_pos).header_object,boardAdapter.columns.get(column_pos).objects.get(item_pos), column_pos,item_pos);
+                boardAdapter.columns.get(column_pos).views.remove(item_pos);
+                boardAdapter.columns.get(column_pos).views.add(item_pos,view);
+                parent_item.addView(view);
+            }
+            if(boardAdapter.columns.get(column_pos).footer != null) {
+                ViewGroup parent_footer = removeParent(boardAdapter.columns.get(column_pos).footer);
+                boardAdapter.columns.get(column_pos).footer = boardAdapter.createFooterView(getContext(), boardAdapter.columns.get(column_pos).footer_object, column_pos);
+                parent_footer.addView(boardAdapter.columns.get(column_pos).footer);
+            }
         }
     }
 
@@ -823,6 +851,7 @@ public class BoardView extends FrameLayout {
         }
         parent_layout.addView(layout);
         if(header != null){
+            header.setId(HEADER_ID);
             removeParent(header);
             layout.addView(header);
             header.setOnClickListener(new OnClickListener() {
