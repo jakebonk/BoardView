@@ -700,7 +700,7 @@ public class BoardView extends FrameLayout {
             boardAdapter.columns.get(originalPosition).objects.remove(originalItemPosition);
             boardAdapter.columns.get(columnPos).objects.add(pos, tmpObject);
             if (mDragItemStartCallback != null) {
-                mDragItemStartCallback.endDrag(mobileView, originalPosition, originalItemPosition, pos, columnPos);
+                mDragItemStartCallback.endDrag(mobileView, originalItemPosition,originalPosition, pos, columnPos);
             }
         }else if(mCellIsMobile){
             for(int i = 0;i < mParentLayout.getChildCount();i++){
@@ -950,7 +950,7 @@ public class BoardView extends FrameLayout {
                     }
                     originalPosition = mParentLayout.indexOfChild((LinearLayout) ((LinearLayout) view.getParent()).getParent().getParent());
                     originalItemPosition = ((LinearLayout) view.getParent()).indexOfChild(view);
-                    mDragItemStartCallback.startDrag(view, originalPosition, originalItemPosition);
+                    mDragItemStartCallback.startDrag(view, originalItemPosition,originalPosition);
                     mCellSubIsMobile = true;
                     mobileView = (View) (view);
                     mHoverCell = getAndAddHoverView(mobileView, 1);
